@@ -44,6 +44,7 @@ public class ChannelHandlers {
     }
 
     protected ChannelHandler wrapInternal(ChannelHandler handler, URL url) {
+        //封装handler, 底层默认由AllDispatcher.dispatch 包装参数handler并返回一个AllChannelHandler 的包装handler,
         return new MultiMessageHandler(new HeartbeatHandler(ExtensionLoader.getExtensionLoader(Dispatcher.class)
                 .getAdaptiveExtension().dispatch(handler, url)));
     }

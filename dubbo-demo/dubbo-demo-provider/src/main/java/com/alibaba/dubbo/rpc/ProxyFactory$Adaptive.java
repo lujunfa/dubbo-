@@ -4,6 +4,7 @@ public class ProxyFactory$Adaptive implements com.alibaba.dubbo.rpc.ProxyFactory
     public com.alibaba.dubbo.rpc.Invoker getInvoker(java.lang.Object arg0, java.lang.Class arg1, com.alibaba.dubbo.common.URL arg2) throws com.alibaba.dubbo.rpc.RpcException {
         if (arg2 == null) throw new IllegalArgumentException("url == null");
         com.alibaba.dubbo.common.URL url = arg2;
+        //用哪个ProxyFactory取决于URL中的proxy key的值
         String extName = url.getParameter("proxy", "javassist");
         if(extName == null) throw new IllegalStateException("Fail to get extension(com.alibaba.dubbo.rpc.ProxyFactory) name from url(" + url.toString() + ") use keys([proxy])");
         com.alibaba.dubbo.rpc.ProxyFactory extension = (com.alibaba.dubbo.rpc.ProxyFactory)ExtensionLoader.getExtensionLoader(com.alibaba.dubbo.rpc.ProxyFactory.class).getExtension(extName);

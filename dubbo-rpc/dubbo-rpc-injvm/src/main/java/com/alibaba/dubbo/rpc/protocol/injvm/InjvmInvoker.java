@@ -52,6 +52,12 @@ class InjvmInvoker<T> extends AbstractInvoker<T> {
         }
     }
 
+    /**
+     * injvm 协议因为就是本地调用，所以直接就调用本地服务实例对象就行了
+     * @param invocation
+     * @return
+     * @throws Throwable
+     */
     @Override
     public Result doInvoke(Invocation invocation) throws Throwable {
         Exporter<?> exporter = InjvmProtocol.getExporter(exporterMap, getUrl());

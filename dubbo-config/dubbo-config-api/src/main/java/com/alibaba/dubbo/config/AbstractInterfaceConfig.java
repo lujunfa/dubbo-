@@ -159,7 +159,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
     }
 
     protected List<URL> loadRegistries(boolean provider) {
-        // 检测是否存在注册中心配置类，不存在则抛出异常
+        // 从环境属性中取得注册中心的地址， 生成注册中心RegistryConfig配置对象。如果还不存在注册中心配置类，则抛出异常
         checkRegistry();
         List<URL> registryList = new ArrayList<URL>();
         if (registries != null && !registries.isEmpty()) {
@@ -189,6 +189,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                         map.put(Constants.PID_KEY, String.valueOf(ConfigUtils.getPid()));
                     }
                     if (!map.containsKey("protocol")) {
+                        //如果RegistryFactory扩展实现有remote,则协议设置成remote,否则设置为dubbo
                         if (ExtensionLoader.getExtensionLoader(RegistryFactory.class).hasExtension("remote")) {
                             map.put("protocol", "remote");
                         } else {

@@ -28,7 +28,7 @@
     <dubbo:registry address="zookeeper://127.0.0.1:2181" client="zkclient" />
 
     <!-- 用dubbo协议在20880端口暴露服务 -->
-    <dubbo:protocol name="dubbo" port="20881"/>
+    <dubbo:protocol name="http" port="20881" server="tomcat"/>
 
     <!-- service implementation, as same as regular local bean -->
     <bean id="demoService" class="com.alibaba.dubbo.demo.provider.DemoServiceImpl"/>

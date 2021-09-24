@@ -70,12 +70,16 @@ public class DubboProtocol extends AbstractProtocol {
     //consumer side export a stub service for dispatching event
     //servicekey-stubmethods
     private final ConcurrentMap<String, String> stubServiceMethodsMap = new ConcurrentHashMap<String, String>();
+
+    //真正处理dubbo远程调用的handler
     private ExchangeHandler requestHandler = new ExchangeHandlerAdapter() {
 
         @Override
         public Object reply(ExchangeChannel channel, Object message) throws RemotingException {
+            //dubbo 网络通讯都是通过Invocation进行的
             if (message instanceof Invocation) {
                 Invocation inv = (Invocation) message;
+                //根据Invocation找出处理程序
                 Invoker<?> invoker = getInvoker(channel, inv);
                 // need to consider backward-compatibility if it's a callback
                 if (Boolean.TRUE.toString().equals(inv.getAttachments().get(IS_CALLBACK_SERVICE_INVOKE))) {
@@ -101,6 +105,7 @@ public class DubboProtocol extends AbstractProtocol {
                     }
                 }
                 RpcContext.getContext().setRemoteAddress(channel.getRemoteAddress());
+                //调用处理程序处理远程调用
                 return invoker.invoke(inv);
             }
             throw new RemotingException(channel, "Unsupported request: "
@@ -189,6 +194,7 @@ public class DubboProtocol extends AbstractProtocol {
                         .equals(NetUtils.filterLocalHost(address.getAddress().getHostAddress()));
     }
 
+    //根据Invocation找出处理程序
     Invoker<?> getInvoker(Channel channel, Invocation inv) throws RemotingException {
         boolean isCallBackServiceInvoke = false;
         boolean isStubServiceInvoke = false;
@@ -207,6 +213,7 @@ public class DubboProtocol extends AbstractProtocol {
         }
         String serviceKey = serviceKey(port, path, inv.getAttachments().get(Constants.VERSION_KEY), inv.getAttachments().get(Constants.GROUP_KEY));
 
+        //从之前导出服务的缓存map中根据service key找到exporter，并从中拿到invoker
         DubboExporter<?> exporter = (DubboExporter<?>) exporterMap.get(serviceKey);
 
         if (exporter == null)
@@ -251,6 +258,7 @@ public class DubboProtocol extends AbstractProtocol {
 
         // 启动服务器
         openServer(url);
+        //优化序列化
         optimizeSerialization(url);
         return exporter;
     }
@@ -286,7 +294,7 @@ public class DubboProtocol extends AbstractProtocol {
         url = url.addParameter(Constants.CODEC_KEY, DubboCodec.NAME);
         ExchangeServer server;
         try {
-            // 创建 ExchangeServer
+            // 创建 ExchangeServer，传入url地址等信息和请求处理句柄ExchangeHandlerAdapter  requestHandler，这个处理句柄是真正处理远程调用的被包装的handler
             server = Exchangers.bind(url, requestHandler);
         } catch (RemotingException e) {
             throw new RpcException("Fail to start server(url: " + url + ") " + e.getMessage(), e);
@@ -335,12 +343,24 @@ public class DubboProtocol extends AbstractProtocol {
         }
     }
 
+    /**
+     * 引用远程服务：服务消费者
+     * 1.当用户调用从`refer()`调用返回的`Invoker`对象的`invoke()`方法时，协议需要相应地执行`Invoker`的`invoke()`方法object
+     * 2. 协议的责任是实现从 `refer()` 返回的 `Invoker`。一般来说，协议在 `Invoker` 实现中发送远程请求。
+     * 3、当URL中设置了check=false时，实现一定不要抛出异常，而是在连接失败时尝试恢复。
+     * @param serviceType
+     * @param url  URL address for the remote service
+     * @param <T>
+     * @return
+     * @throws RpcException
+     */
     @Override
     public <T> Invoker<T> refer(Class<T> serviceType, URL url) throws RpcException {
         optimizeSerialization(url);
         // // 创建 Dubbo Invoker
         DubboInvoker<T> invoker = new DubboInvoker<T>(serviceType, url, getClients(url), invokers);
         invokers.add(invoker);
+        //返回DubboInvoker类型的invoker
         return invoker;
     }
 

@@ -19,6 +19,8 @@ package com.alibaba.dubbo.remoting.exchange;
 import com.alibaba.dubbo.remoting.RemotingException;
 
 /**
+ *
+ * 这是一个异步结果获取器，实例对象会保存请求id和ResponseFuture对象的映射关系，线程取结果时如果结果还没出来，该线程会阻塞，直到结果出来后，会发出结果已出的消息唤醒阻塞线程。
  * Future. (API/SPI, Prototype, ThreadSafe)
  *
  * @see com.alibaba.dubbo.remoting.exchange.ExchangeChannel#request(Object)

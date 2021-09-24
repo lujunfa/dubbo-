@@ -37,7 +37,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * DefaultFuture.
+ * DefaultFuture. 异步结果获取器
  */
 public class DefaultFuture implements ResponseFuture {
 
@@ -70,7 +70,7 @@ public class DefaultFuture implements ResponseFuture {
         this.request = request;
         this.id = request.getId();
         this.timeout = timeout > 0 ? timeout : channel.getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
-        // put into waiting map.
+        // 将请求id和DefaultFuture映射关系保存到这个map'中，如果网络收到响应结果后，会删除这个Future对象，并将这个future设置为完成，告诉等待结果的线程拿到结果
         FUTURES.put(id, this);
         CHANNELS.put(id, channel);
     }

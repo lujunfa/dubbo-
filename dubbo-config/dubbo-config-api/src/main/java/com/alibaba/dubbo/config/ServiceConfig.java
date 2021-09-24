@@ -102,7 +102,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     public ServiceConfig(Service service) {
+        //将service注解对象的属性值填充到ServiceConfig对象中
         appendAnnotation(Service.class, service);
+        //填充method config对象
         setMethods(MethodConfig.constructMethodConfig(service.methods()));
     }
 
@@ -281,7 +283,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
+            //验证methods属性中的方法是否存在于接口中，如果不存在则抛异常
             checkInterfaceAndMethods(interfaceClass, methods);
+            //验证接口的实现实例引用是否是接口类型
             checkRef();
             generic = Boolean.FALSE.toString();
         }
@@ -318,6 +322,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         checkProtocol();
         appendProperties(this);
         checkStub(interfaceClass);
+        // 如果是mock，检验
         checkMock(interfaceClass);
         if (path == null || path.length() == 0) {
             path = interfaceName;
@@ -385,7 +390,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (ConfigUtils.getPid() > 0) {
             map.put(Constants.PID_KEY, String.valueOf(ConfigUtils.getPid()));
         }
-        // 通过反射将对象的字段信息添加到 map 中
+        // 将指定对象的字段信息添加到 map 中
         appendParameters(map, application);
         appendParameters(map, module);
         appendParameters(map, provider, Constants.DEFAULT_KEY);
@@ -476,6 +481,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             protocolConfig.setRegister(false);
             map.put("notify", "false");
         }
+
+        //上面所作的都是把各种信息都塞到map中
+
         // 导出服务开始
         String contextPath = protocolConfig.getContextpath();
         if ((contextPath == null || contextPath.length() == 0) && provider != null) {
@@ -498,6 +506,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
             // scope != remote，导出本地服务
             if (!Constants.SCOPE_REMOTE.toString().equalsIgnoreCase(scope)) {
+                //本地虚拟机导出服务，使用InJVM协议导出服务提供者
                 exportLocal(url);
             }
             //scope != local，导出远程服务
@@ -526,7 +535,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                         Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, registryURL.addParameterAndEncoded(Constants.EXPORT_KEY, url.toFullString()));
                         DelegateProviderMetaDataInvoker wrapperInvoker = new DelegateProviderMetaDataInvoker(invoker, this);
 
-                        // 导出服务，并生成 Exporter
+                        // 通过对应协议开始导出服务，并生成 Exporter缓存起来
                         Exporter<?> exporter = protocol.export(wrapperInvoker);
                         exporters.add(exporter);
                     }
@@ -542,6 +551,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         this.urls.add(url);
     }
 
+    /**
+     * 虚拟机本地导出
+     * @param url
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void exportLocal(URL url) {
         if (!Constants.LOCAL_PROTOCOL.equalsIgnoreCase(url.getProtocol())) {
@@ -550,6 +563,8 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                     .setHost(LOCALHOST)
                     .setPort(0);
             StaticContext.getContext(Constants.SERVICE_IMPL_CLASS).put(url.getServiceKey(), getServiceClass(ref));
+
+            //根据URL中不同的protocol协议进行相应协议实现类的服务导出，这里就是INJvmProtocol
             Exporter<?> exporter = protocol.export(
                     proxyFactory.getInvoker(ref, (Class) interfaceClass, local));
             exporters.add(exporter);

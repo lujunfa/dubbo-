@@ -48,6 +48,8 @@ import static com.alibaba.dubbo.config.spring.util.BeanFactoryUtils.addApplicati
 /**
  * ServiceFactoryBean
  *
+ * 服务提供者bean
+ *
  * @export
  */
 public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean, DisposableBean,
@@ -97,6 +99,10 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
         return service;
     }
 
+    /**
+     * 在spring容器完成刷新后开始导出服务
+     * @param event
+     */
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         // 是否有延迟导出 && 是否已导出 && 是不是已被取消导出

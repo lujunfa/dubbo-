@@ -38,7 +38,7 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * DubboInvoker
+ * DubboInvoker  服务消费者需要的Invoker对象
  */
 public class DubboInvoker<T> extends AbstractInvoker<T> {
 
@@ -75,6 +75,7 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
         if (clients.length == 1) {
             currentClient = clients[0];
         } else {
+            //轮询负载均衡，根据原子自增对象index的当前值与服务实例数目取余得到指定服务实例的客户端
             currentClient = clients[index.getAndIncrement() % clients.length];
         }
         try {
@@ -92,6 +93,7 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
                 return new RpcResult();
             } else { // 默认：异步变同步
                 RpcContext.getContext().setFuture(null);
+                // 会循环等待异步处理结果，所以这里异步会转同步，线程会等到知道结果出来才会返回
                 return (Result) currentClient.request(inv, timeout).get();
             }
         } catch (TimeoutException e) {
