@@ -80,7 +80,7 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
             for (Router router : localRouters) {
                 try {
                     if (router.getUrl() == null || router.getUrl().getParameter(Constants.RUNTIME_KEY, false)) {
-                        // 进行服务路由
+                        // 进行服务路由，有消费者url待的一些标签等属性，判断哪些invoker符合消费者引用条件，然后再返回
                         invokers = router.route(invokers, getConsumerUrl(), invocation);
                     }
                 } catch (Throwable t) {

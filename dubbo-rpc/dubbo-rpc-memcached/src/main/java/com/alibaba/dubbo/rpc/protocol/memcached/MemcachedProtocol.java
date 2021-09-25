@@ -39,6 +39,8 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /**
+ * Memcached 协议跟redis协议类似，这里不再赘述
+ *
  * MemcachedProtocol
  */
 public class MemcachedProtocol extends AbstractProtocol {

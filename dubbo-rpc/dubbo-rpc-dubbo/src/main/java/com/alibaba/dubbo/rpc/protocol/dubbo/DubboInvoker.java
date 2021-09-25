@@ -89,6 +89,8 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
                 return new RpcResult();
             } else if (isAsync) { // 异步，有返回值
                 ResponseFuture future = currentClient.request(inv, timeout);
+
+                //异步调用的话，dubbo会将响应塞入到Rpc上下文中，如果我们要取值的话，就从上下文取
                 RpcContext.getContext().setFuture(new FutureAdapter<Object>(future));
                 return new RpcResult();
             } else { // 默认：异步变同步

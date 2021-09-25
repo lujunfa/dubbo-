@@ -42,6 +42,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * thrift协议 跟dubbo协议没太大区别，就是在服务消费者引用程序是指定的编解码协议为thrift
+ */
 public class ThriftProtocol extends AbstractProtocol {
 
     public static final int DEFAULT_PORT = 40880;
@@ -153,7 +156,7 @@ public class ThriftProtocol extends AbstractProtocol {
 
     @Override
     public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
-
+        //ThriftInvoker 使用Thrift进行编解码
         ThriftInvoker<T> invoker = new ThriftInvoker<T>(type, url, getClients(url), invokers);
 
         invokers.add(invoker);

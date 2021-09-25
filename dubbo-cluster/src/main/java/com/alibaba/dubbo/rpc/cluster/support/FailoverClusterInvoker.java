@@ -37,7 +37,7 @@ import java.util.Set;
 /**
  * When invoke fails, log the initial error and retry other invokers (retry n times, which means at most n different invokers will be invoked)
  * Note that retry causes latency.
- * <p>
+ * <p>当调用失败时，记录初始错误并重试其他invoker（重试 n 次，这意味着最多会调用 n 个不同的invoker）注意重试会导致延迟。
  * <a href="http://en.wikipedia.org/wiki/Failover">Failover</a>
  *
  */

@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Execute exactly once, which means this policy will throw an exception immediately in case of an invocation error.
  * Usually used for non-idempotent write operations
- *
+ * 只执行一次，这意味着此策略将在调用错误的情况下立即抛出异常。通常用于非幂等的写操作
  * <a href="http://en.wikipedia.org/wiki/Fail-fast">Fail-fast</a>
  *
  */

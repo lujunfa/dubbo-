@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ *
+ * ReferenceBean 实现了Spring 的FactoryBean接口，这使得在getBean时会触发@#{getObject}方法的调用
  * ReferenceFactoryBean
  *
  * @export
@@ -64,6 +66,7 @@ public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean,
 
     @Override
     public Object getObject() throws Exception {
+        //调用ReferenceConfig父类的init方法，而最终返回一个服务实例的引用
         return get();
     }
 
@@ -78,6 +81,10 @@ public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean,
         return true;
     }
 
+    /**
+     * 初始化基础属性值
+     * @throws Exception
+     */
     @Override
     @SuppressWarnings({"unchecked"})
     public void afterPropertiesSet() throws Exception {

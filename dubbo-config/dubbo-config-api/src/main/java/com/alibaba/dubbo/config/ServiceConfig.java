@@ -370,6 +370,8 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         // 加载注册中心链接
         List<URL> registryURLs = loadRegistries(true);
         // 遍历 protocols，并在每个协议下导出服务
+        // 协议有 dubbo，redis,memecahced,thrift,registry,qos,injvm等协议
+        //每层协议都做自己特性相关的事情，最后registry协议会将服务注册到注册中心，并监听注册变化
         for (ProtocolConfig protocolConfig : protocols) {
             doExportUrlsFor1Protocol(protocolConfig, registryURLs);
         }

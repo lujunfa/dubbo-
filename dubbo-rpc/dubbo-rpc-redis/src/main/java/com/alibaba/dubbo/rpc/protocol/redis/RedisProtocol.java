@@ -47,6 +47,7 @@ import java.util.concurrent.TimeoutException;
 
 
 /**
+ * redis 协议就是让消费客户端直接redis交互，客户端通过set 方法将值塞入到redis中，通过del 开头方法删除redis值，通过get方法获取值
  * RedisProtocol
  */
 public class RedisProtocol extends AbstractProtocol {

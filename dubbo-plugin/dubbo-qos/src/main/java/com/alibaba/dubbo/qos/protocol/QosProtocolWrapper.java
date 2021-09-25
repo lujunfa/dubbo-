@@ -33,6 +33,9 @@ import static com.alibaba.dubbo.common.Constants.QOS_ENABLE;
 import static com.alibaba.dubbo.common.Constants.QOS_PORT;
 import static com.alibaba.dubbo.qos.common.QosConstants.DEFAULT_PORT;
 
+/**
+ * 该协议是dubbo用来开启telnet 服务的，开启了qos服务，我们能够通过telnet命令于dubbo接口通讯。
+ */
 public class QosProtocolWrapper implements Protocol {
 
     private final Logger logger = LoggerFactory.getLogger(QosProtocolWrapper.class);
@@ -55,15 +58,19 @@ public class QosProtocolWrapper implements Protocol {
 
     @Override
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
+
+        //对于注册协议不做处理
         if (Constants.REGISTRY_PROTOCOL.equals(invoker.getUrl().getProtocol())) {
             startQosServer(invoker.getUrl());
             return protocol.export(invoker);
         }
+
         return protocol.export(invoker);
     }
 
     @Override
     public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
+        //对于注册协议进行处理，对其他协议不做处理
         if (Constants.REGISTRY_PROTOCOL.equals(url.getProtocol())) {
             startQosServer(url);
             return protocol.refer(type, url);
@@ -79,6 +86,7 @@ public class QosProtocolWrapper implements Protocol {
 
     private void startQosServer(URL url) {
         try {
+            //qos服务默认是开启的，所以我们不用设置就能通过telnet调用dubbo接口
             boolean qosEnable = url.getParameter(QOS_ENABLE,true);
             if (!qosEnable) {
                 logger.info("qos won't be started because it is disabled. " +

@@ -28,6 +28,14 @@ import java.util.List;
 
 /**
  * LoadBalance. (SPI, Singleton, ThreadSafe)
+ *
+ * 负载均衡接口：当前支持的负载均衡策略有
+ * 1、一致性hash测率
+ * 2、最少使用策略
+ * 3、随机策略
+ * 4、轮询策略
+ *
+ * 默认使用随机策略
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Load_balancing_(computing)">Load-Balancing</a>
  *

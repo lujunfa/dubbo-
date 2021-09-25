@@ -29,6 +29,13 @@ import com.alibaba.dubbo.rpc.service.GenericService;
  */
 public abstract class AbstractProxyFactory implements ProxyFactory {
 
+    /**
+     * 服务消费者用来创建目标接口的代理对象，该代理对象包含了处理程序Invoker
+     * @param invoker
+     * @param <T>
+     * @return
+     * @throws RpcException
+     */
     @Override
     public <T> T getProxy(Invoker<T> invoker) throws RpcException {
         return getProxy(invoker, false);

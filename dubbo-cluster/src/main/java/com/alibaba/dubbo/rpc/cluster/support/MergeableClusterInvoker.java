@@ -60,8 +60,10 @@ public class MergeableClusterInvoker<T> implements Invoker<T> {
     @Override
     @SuppressWarnings("rawtypes")
     public Result invoke(final Invocation invocation) throws RpcException {
+        //获得目录下的服务提供者实例列表
         List<Invoker<T>> invokers = directory.list(invocation);
 
+        //如果url待了merger标识，则消费者会向所有提供者实例发出调用，否则只对其中一个实例发出调用
         String merger = getUrl().getMethodParameter(invocation.getMethodName(), Constants.MERGER_KEY);
         if (ConfigUtils.isEmpty(merger)) { // If a method doesn't have a merger, only invoke one Group
             for (final Invoker<T> invoker : invokers) {
@@ -80,6 +82,7 @@ public class MergeableClusterInvoker<T> implements Invoker<T> {
             returnType = null;
         }
 
+        //多线程并发调用所有实例，并将Future保存在map中
         Map<String, Future<Result>> results = new HashMap<String, Future<Result>>();
         for (final Invoker<T> invoker : invokers) {
             Future<Result> future = executor.submit(new Callable<Result>() {
@@ -96,6 +99,7 @@ public class MergeableClusterInvoker<T> implements Invoker<T> {
         List<Result> resultList = new ArrayList<Result>(results.size());
 
         int timeout = getUrl().getMethodParameter(invocation.getMethodName(), Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
+        //在指定超时时间内等待所有实例返回处理结果
         for (Map.Entry<String, Future<Result>> entry : results.entrySet()) {
             Future<Result> future = entry.getValue();
             try {
@@ -113,8 +117,10 @@ public class MergeableClusterInvoker<T> implements Invoker<T> {
         }
 
         if (resultList.isEmpty()) {
+            //如果所有提供者实例都没在指定时间返回结果，则返回空
             return new RpcResult((Object) null);
         } else if (resultList.size() == 1) {
+            //如果只有一个返回，则无需处理，直接返回
             return resultList.iterator().next();
         }
 
@@ -122,6 +128,7 @@ public class MergeableClusterInvoker<T> implements Invoker<T> {
             return new RpcResult((Object) null);
         }
 
+        //如果多个服务实例返回了结果，则需要进行结果的合并逻辑
         if (merger.startsWith(".")) {
             merger = merger.substring(1);
             Method method;

@@ -212,6 +212,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
+            //校验服务接口和接口方法
             checkInterfaceAndMethods(interfaceClass, methods);
         }
         String resolve = System.getProperty(interfaceName);
@@ -368,14 +369,14 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             // 本地引用
             // 生成本地引用 URL，协议为 injvm
             URL url = new URL(Constants.LOCAL_PROTOCOL, NetUtils.LOCALHOST, 0, interfaceClass.getName()).addParameters(map);
-            // 调用 refer 方法构建 InjvmInvoker 实例
+            // 调用 InJvmProtocal协议的refer 方法构建 InjvmInvoker 实例，进行本机调用
             invoker = refprotocol.refer(interfaceClass, url);
             if (logger.isInfoEnabled()) {
                 logger.info("Using injvm service " + interfaceClass.getName());
             }
         } else {
             // 远程引用
-            // url 不为空，表明用户可能想进行点对点调用
+            // url 不为空，表明用户可能想进行点对点调用，即我们可以通过服务提供者的ip和端口进行和服务提供者的直连操作
             if (url != null && url.length() > 0) { // user specified URL, could be peer-to-peer address, or register center's address.
                 // 当需要配置多个 url 时，可用分号进行分割
                 String[] us = Constants.SEMICOLON_SPLIT_PATTERN.split(url);
