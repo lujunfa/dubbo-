@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Creates a thread pool that reuses a fixed number of threads
- *
+ * dubbo的默认线程池，线程数200，默认使用同步队列，没有缓冲队列作用，如果queue>0,则使用LinkedBlockingQueue队列
  * @see java.util.concurrent.Executors#newFixedThreadPool(int)
  */
 public class FixedThreadPool implements ThreadPool {

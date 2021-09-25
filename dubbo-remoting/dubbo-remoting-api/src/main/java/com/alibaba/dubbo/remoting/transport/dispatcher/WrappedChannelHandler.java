@@ -109,6 +109,10 @@ public class WrappedChannelHandler implements ChannelHandlerDelegate {
         return url;
     }
 
+    /**
+     * dubbo 默认线程池时fixedExecutor ，线程数为200
+     * @return
+     */
     public ExecutorService getExecutorService() {
         ExecutorService cexecutor = executor;
         if (cexecutor == null || cexecutor.isShutdown()) {

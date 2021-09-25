@@ -33,6 +33,8 @@ import java.util.concurrent.RejectedExecutionException;
 /**
  * Only request message will be dispatched to thread pool. Other messages like response, connect, disconnect,
  * heartbeat will be directly executed by I/O thread.
+ *
+ * 只有请求消息会被分派到线程池。其他消息如响应、连接、断开连接、心跳将直接由 IO 线程执行。
  */
 public class ExecutionChannelHandler extends WrappedChannelHandler {
 
@@ -50,6 +52,7 @@ public class ExecutionChannelHandler extends WrappedChannelHandler {
                 // FIXME: when the thread pool is full, SERVER_THREADPOOL_EXHAUSTED_ERROR cannot return properly,
                 // therefore the consumer side has to wait until gets timeout. This is a temporary solution to prevent
                 // this scenario from happening, but a better solution should be considered later.
+                //如果服务消费端的请求数大于默认线程数200，则服务段进行拒绝策略
                 if (t instanceof RejectedExecutionException) {
                     Request request = (Request) message;
                     if (request.isTwoWay()) {
