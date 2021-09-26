@@ -19,6 +19,8 @@ package com.alibaba.dubbo.rpc.protocol.rest;
 import com.alibaba.dubbo.remoting.http.HttpBinder;
 
 /**
+ *
+ * Rest http服务器
  * Only the server that implements servlet container
  * could support something like @Context injection of servlet objects.
  *
@@ -32,6 +34,10 @@ public class RestServerFactory {
     }
 
     public RestServer createServer(String name) {
+
+        /**
+         * 根据用户指定http服务器的底层实现，如果时jetty或者tomcat就实现成DubboHttpServer，否则netty http服务器
+         */
         // TODO move names to Constants
         if ("servlet".equalsIgnoreCase(name) || "jetty".equalsIgnoreCase(name) || "tomcat".equalsIgnoreCase(name)) {
             return new DubboHttpServer(httpBinder);

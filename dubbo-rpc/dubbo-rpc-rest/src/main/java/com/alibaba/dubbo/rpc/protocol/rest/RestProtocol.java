@@ -114,6 +114,7 @@ public class RestProtocol extends AbstractProxyProtocol {
 
         final Class resourceDef = GetRestful.getRootResourceClass(implClass) != null ? implClass : type;
 
+        //rest 服务部署
         server.deploy(resourceDef, impl, contextPath);
 
         final RestServer s = server;
